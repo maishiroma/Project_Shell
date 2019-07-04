@@ -22,14 +22,27 @@ namespace MattScripts {
         public static GameManager Instance;
 
         [Header("Gameplay Variables")]
-        public GameState currentState = GameState.START;    // The current state the game is in rn
-
         [Tooltip("How many times does the game swap the shells?")]
         [Range(1,100)]
         public int numberOfSwitches = 10;                   // Number of times the shells swap
 
+        [Tooltip("How many sucessful rounds will it take to make the game increase in difficulty?")]
+        [Range(1,10)]
+        public int turnDifficulty = 5;
+
         // Private Variables
-        private InteractShell luckyShell;
+        private GameState currentState = GameState.START;   // The current state the game is in rn
+        private InteractShell luckyShell;                   // Keeps track of this round's lucky shell
+        private int gameScore;                              // The current score the player has
+        private int origNumberOfSwitches;                   // Number of times the shells swap
+
+        public int GetScore {
+            get {return gameScore;}
+        }
+
+        public GameState GetCurrentState {
+            get {return currentState;}
+        }
 
         // Singleton Pattern
 		private void Awake()
@@ -49,6 +62,8 @@ namespace MattScripts {
 		private void Start()
 		{
             currentState = GameState.START;
+            gameScore = 0;
+            origNumberOfSwitches = numberOfSwitches;
 		}
 
 		// When called, randomly picks a shell that is deemed the winning shell. Returns said shell out
@@ -57,6 +72,31 @@ namespace MattScripts {
             int randomIndex = Random.Range(0, InteractShell.shellList.Count);
             InteractShell.shellList[randomIndex].isWinner = true;
             return InteractShell.shellList[randomIndex];
+        }
+
+        // When called, increases the speed of the shells, their arc and the number of switches
+        private void IncreaseDifficulty()
+        {
+            float randMoveSpeedIncrease = Random.Range(1f,2f);
+            float randArcHeightIncrease = Random.Range(1f,2f);
+
+            foreach(InteractShell currShell in InteractShell.shellList)
+            {
+                int randChance = Random.Range(0,2);
+
+                currShell.moveSpeed = Mathf.Clamp(currShell.moveSpeed + randMoveSpeedIncrease, 1f, 100f);
+
+                // This determines if the arc will be negative or not.
+                if(randChance == 1)
+                {
+                    currShell.arcHeight = -Mathf.Clamp(Mathf.Abs(currShell.arcHeight) + randArcHeightIncrease, -5f, 5f);
+                }
+                else
+                {
+                    currShell.arcHeight = Mathf.Clamp(Mathf.Abs(currShell.arcHeight) + randArcHeightIncrease, -5f, 5f);
+                }
+            }
+            numberOfSwitches = Mathf.Clamp(numberOfSwitches + 1, 1,100);
         }
 
         // Called to show the shell that the player should be looking at
@@ -82,6 +122,12 @@ namespace MattScripts {
         {
             if(currentState == GameState.START)
             {
+                if(gameScore % turnDifficulty == 0 && gameScore != 0)
+                {
+                    // Every 5 sucessful rounds, we increase the difficulty.
+                    IncreaseDifficulty();
+                }
+
                 luckyShell = DetermineLuckyShell();
 
                 currentState = GameState.SHOW;
@@ -124,30 +170,28 @@ namespace MattScripts {
         {
             if(currentState == GameState.SELECTING)
             {
+                // The reason we wait 3 seconds here is because we want to make sure the ShowLuckyShell method
+                // completes running its course, since we called it in parallel to this method.
                 if(selectedShell.isWinner == true)
                 {
                     currentState = GameState.WIN;
+                    gameScore += 1;
+                    yield return new WaitForSeconds(3f);
                 }
                 else
                 {
                     currentState = GameState.LOSE;
+                    yield return new WaitForSeconds(3f);
+
+                    // If we lose once, we restart from the start
+                    gameScore = 0;
+                    numberOfSwitches = origNumberOfSwitches;
                 }
 
-                // The reason we wait 3 seconds here is because we want to make sure the ShowLuckyShell method
-                // completes running its course, since we called it in parallel to this method.
-                yield return new WaitForSeconds(3f);
-                ResetGame();
-            }
-        }
-
-        // When called, resets the game back to the initial state.
-        public void ResetGame()
-        {
-            if(currentState != GameState.SELECTING && currentState != GameState.SHOW)
-            {
+                // We then reset the shells back
                 foreach(InteractShell currShell in InteractShell.shellList)
                 {
-                    StartCoroutine(currShell.ResetShell());
+                    currShell.ResetShell();
                 }
                 currentState = GameState.START;
             }

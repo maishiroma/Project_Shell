@@ -12,6 +12,8 @@ namespace MattScripts {
     public class InteractShell : MonoBehaviour {
 
         public static List<InteractShell> shellList;    // All of the shells know how many shells are there in the game
+        public static float origMoveSpeed;              // The orignal move speed of all of the shells
+        public static float origArcHeight;              // The orignal arc height of all the shells
 
         [Header("General Variables")]
         public bool isWinner = false;                   // This indicates that this shell is the lucky one
@@ -21,7 +23,7 @@ namespace MattScripts {
         public float moveSpeed = 1f;                    // How fast does this object move?
 
         [Tooltip("How high is the arc on this shell's swap? Negative numbers make the shell move below the line!")]
-        [Range(-10f,10f)]
+        [Range(-5f,5f)]
         public float arcHeight = 1f;                    // How high is the arch on this object's movement?
 
         [Header("Visual Variables")]
@@ -47,6 +49,8 @@ namespace MattScripts {
             if(shellList == null)
             {
                 shellList = new List<InteractShell>();
+                origMoveSpeed = moveSpeed;
+                origArcHeight = arcHeight;
             }
 
             shellList.Add(this);
@@ -99,7 +103,7 @@ namespace MattScripts {
 		// We have selected this object
 		private void OnMouseUp()
 		{
-            if(GameManager.Instance.currentState == GameState.SELECTING)
+            if(GameManager.Instance.GetCurrentState == GameState.SELECTING)
             {
                 // When we selected a shell, we show the answer and determine if the player has picked the right shell.
                 StartCoroutine(GameManager.Instance.ShowLuckyShell());
@@ -110,7 +114,7 @@ namespace MattScripts {
         // We are hovering over said object
 		private void OnMouseEnter()
 		{
-            if(GameManager.Instance.currentState == GameState.SELECTING)
+            if(GameManager.Instance.GetCurrentState == GameState.SELECTING)
             {
                 objRender.material = selectedColor;
             }		
@@ -119,7 +123,7 @@ namespace MattScripts {
         // We left the mouse from this object
 		private void OnMouseExit()
 		{
-            if(GameManager.Instance.currentState == GameState.SELECTING)
+            if(GameManager.Instance.GetCurrentState == GameState.SELECTING)
             {
                 objRender.material = origColor;
             }		
@@ -142,12 +146,18 @@ namespace MattScripts {
         }
     
         // Reverts this shell back to its default values
-        public IEnumerator ResetShell()
+        public void ResetShell()
         {
             gameObject.transform.position = origLocation;
             objRender.material = origColor;
             isWinner = false;
-            yield return null;
+
+            // If we lost the game, we also reset its move speeds
+            if(GameManager.Instance.GetCurrentState == GameState.LOSE)
+            {
+                moveSpeed = origMoveSpeed;
+                arcHeight = origArcHeight;
+            }
         }
     
         // Toggles between the original color and the selected color. Used in an Coroutine to make a flash effect
