@@ -14,6 +14,7 @@ namespace MattScripts {
 
         public static GameUI Instance;
 
+        [Header("GUI References")]
         public Button startButton;                      // Reference to the Start Button
         public TextMeshProUGUI gameMessage;             // Reference to the game message
 
@@ -40,6 +41,10 @@ namespace MattScripts {
                     startButton.gameObject.SetActive(true);
                     gameMessage.text = "Welcome to Shell Game!";
                     break;
+                case GameState.SHOW:
+                    startButton.gameObject.SetActive(false);
+                    gameMessage.text = "Here's your target this round!";
+                    break;
                 case GameState.SHUFFLING:
                     startButton.gameObject.SetActive(false);
                     gameMessage.text = "Keep an eye on the prize!";
@@ -47,6 +52,14 @@ namespace MattScripts {
                 case GameState.SELECTING:
                     startButton.gameObject.SetActive(false);
                     gameMessage.text = "Which one is the lucky object?";
+                    break;
+                case GameState.WIN:
+                    startButton.gameObject.SetActive(false);
+                    gameMessage.text = "Correct choice!";
+                    break;
+                case GameState.LOSE:
+                    startButton.gameObject.SetActive(false);
+                    gameMessage.text = "Too bad...";
                     break;
             }
 		}

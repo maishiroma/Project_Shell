@@ -13,22 +13,32 @@ namespace MattScripts {
 
         public static List<InteractShell> shellList;    // All of the shells know how many shells are there in the game
 
+        [Header("General Variables")]
         public bool isWinner = false;                   // This indicates that this shell is the lucky one
+
+        [Tooltip("How fast does this shell move while being shuffled?")]
+        [Range(1f,100f)]
         public float moveSpeed = 1f;                    // How fast does this object move?
+
+        [Tooltip("How high is the arc on this shell's swap? Negative numbers make the shell move below the line!")]
+        [Range(-10f,10f)]
         public float arcHeight = 1f;                    // How high is the arch on this object's movement?
 
+        [Header("Visual Variables")]
+        public Material selectedColor;                  // The color to use when this object is selected
+
         // Private Variables
+        private MeshRenderer objRender;
+
         private bool isMoving;                          // IS the object currently moving?
         private Vector3 newLocation;                    // The new destination to move this object towards
         private Vector3 origLocation;                   // The initial location of this object
         private Vector3 startMoveLocation;              // The current location this object is at before moving
+        private Material origColor;                     // The original color of the object
 
+        // Getter
         public bool IsMoving {
             get {return isMoving;}
-        }
-
-        public Vector3 GetOrigLocation {
-            get { return origLocation; }
         }
 
         // Adds this shell to the list of shells in the game
@@ -45,9 +55,12 @@ namespace MattScripts {
         // Sets all of the variables to defaults
 		private void Start()
 		{
+            objRender = gameObject.GetComponent<MeshRenderer>();
+
             origLocation = gameObject.transform.position;
             newLocation = Vector3.zero;
             startMoveLocation = Vector3.zero;
+            origColor = objRender.material;
             isMoving = false;
 		}
 
@@ -88,15 +101,9 @@ namespace MattScripts {
 		{
             if(GameManager.Instance.currentState == GameState.SELECTING)
             {
-                if(isWinner == true)
-                {
-                    Debug.Log("You win!");
-                }
-                else
-                {
-                    Debug.Log("You lose...");
-                }
-                GameManager.Instance.ResetGame();
+                // When we selected a shell, we show the answer and determine if the player has picked the right shell.
+                StartCoroutine(GameManager.Instance.ShowLuckyShell());
+                StartCoroutine(GameManager.Instance.ConcludeGame(this));
             }
 		}
 
@@ -105,7 +112,7 @@ namespace MattScripts {
 		{
             if(GameManager.Instance.currentState == GameState.SELECTING)
             {
-                Debug.Log("We selected " + name);
+                objRender.material = selectedColor;
             }		
         }
 
@@ -114,7 +121,7 @@ namespace MattScripts {
 		{
             if(GameManager.Instance.currentState == GameState.SELECTING)
             {
-                Debug.Log("We selected " + name);
+                objRender.material = origColor;
             }		
         }
 	
@@ -133,6 +140,27 @@ namespace MattScripts {
                 otherShell.isMoving = true;
             }
         }
+    
+        // Reverts this shell back to its default values
+        public IEnumerator ResetShell()
+        {
+            gameObject.transform.position = origLocation;
+            objRender.material = origColor;
+            isWinner = false;
+            yield return null;
+        }
+    
+        // Toggles between the original color and the selected color. Used in an Coroutine to make a flash effect
+        public void ToggleShellColors()
+        {
+            if(objRender.material == origColor)
+            {
+                objRender.material = selectedColor;
+            }
+            else
+            {
+                objRender.material = origColor;
+            }
+        }
     }
 }
-

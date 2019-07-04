@@ -7,18 +7,29 @@ using UnityEngine;
 
 namespace MattScripts {
 
+    // All of the states the game can be in
     public enum GameState {
-        SELECTING,
-        SHUFFLING,
-        START
+        LOSE,               // The player chose incorrectly
+        WIN,                // The player chose correctly
+        SELECTING,          // When the game asks the player to choose the correct one
+        SHUFFLING,          // When the game is moving the shell around
+        SHOW,               // When the game shows the player the lucky shell
+        START               // When the player starts a new round
     }
 
     public class GameManager : MonoBehaviour {
 
         public static GameManager Instance;
 
-        public GameState currentState = GameState.START;
+        [Header("Gameplay Variables")]
+        public GameState currentState = GameState.START;    // The current state the game is in rn
+
+        [Tooltip("How many times does the game swap the shells?")]
+        [Range(1,100)]
         public int numberOfSwitches = 10;                   // Number of times the shells swap
+
+        // Private Variables
+        private InteractShell luckyShell;
 
         // Singleton Pattern
 		private void Awake()
@@ -40,74 +51,104 @@ namespace MattScripts {
             currentState = GameState.START;
 		}
 
-		// When called, randomly picks a shell that is deemed the winning shell.
-		private void DetermineLuckyShell()
+		// When called, randomly picks a shell that is deemed the winning shell. Returns said shell out
+        private InteractShell DetermineLuckyShell()
         {
             int randomIndex = Random.Range(0, InteractShell.shellList.Count);
             InteractShell.shellList[randomIndex].isWinner = true;
-            print(InteractShell.shellList[randomIndex].name + " is the lucky one.");
+            return InteractShell.shellList[randomIndex];
         }
 
-        // When called, resets all of the shells to their normal states and positions
-        private void ResetShells()
+        // Called to show the shell that the player should be looking at
+        public IEnumerator ShowLuckyShell()
         {
-            foreach(InteractShell currentShell in InteractShell.shellList)
+            // The shell should flash 3 times
+            for(int i = 0; i < 6; i++)
             {
-                currentShell.transform.position = currentShell.GetOrigLocation;
+                luckyShell.ToggleShellColors();
+                yield return new WaitForSeconds(0.5f);
+            }
 
-                if(currentShell.isWinner == true)
-                {
-                    currentShell.isWinner = false;
-                    print(currentShell.name + " was reset back to normal.");
-                }
+            // If the game state is at SHOW, we start the game up
+            // Otherwise, we simply leave the method
+            if(currentState == GameState.SHOW)
+            {
+                StartCoroutine(PerformGame());
             }
         }
 
-        // While this is running, the shells will be called to move.
-        private IEnumerator PerformGame()
-        {
-            for(int iterating = 0; iterating < numberOfSwitches; ++iterating)
-            {
-                // We pick two random shells to move
-                int randomIndex1 = Random.Range(0, InteractShell.shellList.Count);
-                int randomIndex2 = Random.Range(0, InteractShell.shellList.Count);
-                while(randomIndex1 == randomIndex2)
-                {
-                    randomIndex2 = Random.Range(0, InteractShell.shellList.Count);
-                }
-
-                InteractShell currShell1 = InteractShell.shellList[randomIndex1];
-                InteractShell currShell2 = InteractShell.shellList[randomIndex2];
-                currShell1.SwapShellLocation(currShell2);
-
-                // While we are moving these shells, we wait
-                while(currShell1.IsMoving || currShell2.IsMoving)
-                {
-                    yield return null;
-                }
-            }
-            currentState = GameState.SELECTING;
-        }
-    
         // When called, starts up the game
         public void StartGame()
         {
             if(currentState == GameState.START)
             {
-                ResetShells();
-                DetermineLuckyShell();
-                currentState = GameState.SHUFFLING;
+                luckyShell = DetermineLuckyShell();
 
-                StartCoroutine(PerformGame());
+                currentState = GameState.SHOW;
+                StartCoroutine(ShowLuckyShell());
             }
         }
     
-        // When called, resets the game.
-        public void ResetGame()
+        // While this is running, the shells will be called to move.
+        public IEnumerator PerformGame()
+        {
+            if(currentState == GameState.SHOW)
+            {
+                currentState = GameState.SHUFFLING;
+                for(int iterating = 0; iterating < numberOfSwitches; ++iterating)
+                {
+                    // We pick two random shells to move
+                    int randomIndex1 = Random.Range(0, InteractShell.shellList.Count);
+                    int randomIndex2 = Random.Range(0, InteractShell.shellList.Count);
+                    while(randomIndex1 == randomIndex2)
+                    {
+                        randomIndex2 = Random.Range(0, InteractShell.shellList.Count);
+                    }
+
+                    InteractShell currShell1 = InteractShell.shellList[randomIndex1];
+                    InteractShell currShell2 = InteractShell.shellList[randomIndex2];
+                    currShell1.SwapShellLocation(currShell2);
+
+                    // While we are moving these shells, we wait
+                    while(currShell1.IsMoving || currShell2.IsMoving)
+                    {
+                        yield return null;
+                    }
+                }
+                currentState = GameState.SELECTING;
+            }
+        }
+
+        // This is called when the player has selected a shell to see if they are right
+        public IEnumerator ConcludeGame(InteractShell selectedShell)
         {
             if(currentState == GameState.SELECTING)
             {
-                ResetShells();
+                if(selectedShell.isWinner == true)
+                {
+                    currentState = GameState.WIN;
+                }
+                else
+                {
+                    currentState = GameState.LOSE;
+                }
+
+                // The reason we wait 3 seconds here is because we want to make sure the ShowLuckyShell method
+                // completes running its course, since we called it in parallel to this method.
+                yield return new WaitForSeconds(3f);
+                ResetGame();
+            }
+        }
+
+        // When called, resets the game back to the initial state.
+        public void ResetGame()
+        {
+            if(currentState != GameState.SELECTING && currentState != GameState.SHOW)
+            {
+                foreach(InteractShell currShell in InteractShell.shellList)
+                {
+                    StartCoroutine(currShell.ResetShell());
+                }
                 currentState = GameState.START;
             }
         }

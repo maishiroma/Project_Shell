@@ -402,6 +402,7 @@ MonoBehaviour:
   isWinner: 0
   moveSpeed: 10
   arcHeight: 1
+  selectedColor: {fileID: 2100000, guid: 9a8297a7bd69c4eebaf06efdf1a81600, type: 2}
 --- !u!1 &534669902
 GameObject:
   m_ObjectHideFlags: 0
@@ -568,7 +569,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be1af7838db4146e38c8aaffa6506fb5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentState: 1
+  currentState: 2
   numberOfSwitches: 10
 --- !u!4 &698056770
 Transform:
@@ -838,6 +839,7 @@ MonoBehaviour:
   isWinner: 0
   moveSpeed: 10
   arcHeight: 1
+  selectedColor: {fileID: 2100000, guid: 9a8297a7bd69c4eebaf06efdf1a81600, type: 2}
 --- !u!1 &1774955834
 GameObject:
   m_ObjectHideFlags: 0
@@ -1203,3 +1205,4 @@ MonoBehaviour:
   isWinner: 0
   moveSpeed: 10
   arcHeight: 1
+  selectedColor: {fileID: 2100000, guid: 9a8297a7bd69c4eebaf06efdf1a81600, type: 2}
