@@ -23,20 +23,20 @@ namespace MattScripts {
         public float moveSpeed = 1f;                    // How fast does this object move?
 
         [Tooltip("How high is the arc on this shell's swap? Negative numbers make the shell move below the line!")]
-        [Range(-5f,5f)]
+        [Range(-30f,30f)]
         public float arcHeight = 1f;                    // How high is the arch on this object's movement?
 
         [Header("Visual Variables")]
-        public Material selectedColor;                  // The color to use when this object is selected
+        public Shader outlineShader;                  // The shader to use when this object is selected
 
         // Private Variables
-        private MeshRenderer objRender;
+        private SkinnedMeshRenderer[] objRenders;
+        private Shader origShader;
 
         private bool isMoving;                          // IS the object currently moving?
         private Vector3 newLocation;                    // The new destination to move this object towards
         private Vector3 origLocation;                   // The initial location of this object
         private Vector3 startMoveLocation;              // The current location this object is at before moving
-        private Material origColor;                     // The original color of the object
 
         // Getter
         public bool IsMoving {
@@ -59,12 +59,12 @@ namespace MattScripts {
         // Sets all of the variables to defaults
 		private void Start()
 		{
-            objRender = gameObject.GetComponent<MeshRenderer>();
+            objRenders = gameObject.GetComponentsInChildren<SkinnedMeshRenderer>();
 
+            origShader = objRenders[0].material.shader;
             origLocation = gameObject.transform.position;
             newLocation = Vector3.zero;
             startMoveLocation = Vector3.zero;
-            origColor = objRender.material;
             isMoving = false;
 		}
 
@@ -116,7 +116,7 @@ namespace MattScripts {
 		{
             if(GameManager.Instance.GetCurrentState == GameState.SELECTING)
             {
-                objRender.material = selectedColor;
+                ToggleShellColors();
             }		
         }
 
@@ -125,7 +125,7 @@ namespace MattScripts {
 		{
             if(GameManager.Instance.GetCurrentState == GameState.SELECTING)
             {
-                objRender.material = origColor;
+                ToggleShellColors();
             }		
         }
 	
@@ -149,7 +149,10 @@ namespace MattScripts {
         public void ResetShell()
         {
             gameObject.transform.position = origLocation;
-            objRender.material = origColor;
+            foreach(SkinnedMeshRenderer currRender in objRenders)
+            {
+                currRender.material.shader = origShader;
+            }
             isWinner = false;
 
             // If we lost the game, we also reset its move speeds
@@ -163,13 +166,16 @@ namespace MattScripts {
         // Toggles between the original color and the selected color. Used in an Coroutine to make a flash effect
         public void ToggleShellColors()
         {
-            if(objRender.material == origColor)
+            foreach(SkinnedMeshRenderer currRender in objRenders)
             {
-                objRender.material = selectedColor;
-            }
-            else
-            {
-                objRender.material = origColor;
+                if(currRender.material.shader == origShader)
+                {
+                    currRender.material.shader = outlineShader;
+                }
+                else
+                {
+                    currRender.material.shader = origShader;
+                }
             }
         }
     }

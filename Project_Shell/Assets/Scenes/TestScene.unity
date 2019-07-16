@@ -402,7 +402,7 @@ MonoBehaviour:
   isWinner: 0
   moveSpeed: 10
   arcHeight: 1
-  selectedColor: {fileID: 2100000, guid: 9a8297a7bd69c4eebaf06efdf1a81600, type: 2}
+  outlineShader: {fileID: 4800000, guid: c29ee6ce03c5e4660a6c442c3898981e, type: 3}
 --- !u!1 &534669902
 GameObject:
   m_ObjectHideFlags: 0
@@ -839,7 +839,7 @@ MonoBehaviour:
   isWinner: 0
   moveSpeed: 10
   arcHeight: 1
-  selectedColor: {fileID: 2100000, guid: 9a8297a7bd69c4eebaf06efdf1a81600, type: 2}
+  outlineShader: {fileID: 4800000, guid: c29ee6ce03c5e4660a6c442c3898981e, type: 3}
 --- !u!1 &1774955834
 GameObject:
   m_ObjectHideFlags: 0
@@ -1207,7 +1207,7 @@ MonoBehaviour:
   isWinner: 0
   moveSpeed: 10
   arcHeight: 1
-  selectedColor: {fileID: 2100000, guid: 9a8297a7bd69c4eebaf06efdf1a81600, type: 2}
+  outlineShader: {fileID: 4800000, guid: c29ee6ce03c5e4660a6c442c3898981e, type: 3}
 --- !u!1 &2052683990
 GameObject:
   m_ObjectHideFlags: 0
