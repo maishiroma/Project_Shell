@@ -30,6 +30,9 @@ namespace MattScripts {
         [Range(1,10)]
         public int turnDifficulty = 5;
 
+        [Header("External Refs")]
+        public SoundManager soundPlayer;
+
         // Private Variables
         private GameState currentState = GameState.START;   // The current state the game is in rn
         private InteractShell luckyShell;                   // Keeps track of this round's lucky shell
@@ -176,16 +179,19 @@ namespace MattScripts {
                 {
                     currentState = GameState.WIN;
                     gameScore += 1;
+                    StartCoroutine(soundPlayer.WinSound());
                     yield return new WaitForSeconds(3f);
                 }
                 else
                 {
                     currentState = GameState.LOSE;
+                    StartCoroutine(soundPlayer.LoseSound());
                     yield return new WaitForSeconds(3f);
 
                     // If we lose once, we restart from the start
                     gameScore = 0;
                     numberOfSwitches = origNumberOfSwitches;
+                    soundPlayer.RestartSong();
                 }
 
                 // We then reset the shells back
