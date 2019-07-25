@@ -32,6 +32,7 @@ namespace MattScripts {
         // Private Variables
         private SkinnedMeshRenderer[] objRenders;
         private Shader origShader;
+        private Animator animator;
 
         private bool isMoving;                          // IS the object currently moving?
         private Vector3 newLocation;                    // The new destination to move this object towards
@@ -60,6 +61,7 @@ namespace MattScripts {
 		private void Start()
 		{
             objRenders = gameObject.GetComponentsInChildren<SkinnedMeshRenderer>();
+            animator = gameObject.GetComponent<Animator>();
 
             origShader = objRenders[0].material.shader;
             origLocation = gameObject.transform.position;
@@ -106,7 +108,6 @@ namespace MattScripts {
             if(GameManager.Instance.GetCurrentState == GameState.SELECTING)
             {
                 // When we selected a shell, we show the answer and determine if the player has picked the right shell.
-                StartCoroutine(GameManager.Instance.ShowLuckyShell());
                 StartCoroutine(GameManager.Instance.ConcludeGame(this));
             }
 		}
@@ -116,7 +117,7 @@ namespace MattScripts {
 		{
             if(GameManager.Instance.GetCurrentState == GameState.SELECTING)
             {
-                ToggleShellColors();
+                AnimateHalfOpen();
             }		
         }
 
@@ -125,7 +126,7 @@ namespace MattScripts {
 		{
             if(GameManager.Instance.GetCurrentState == GameState.SELECTING)
             {
-                ToggleShellColors();
+                AnimateHalfClosed();
             }		
         }
 	
@@ -177,6 +178,28 @@ namespace MattScripts {
                     currRender.material.shader = origShader;
                 }
             }
+        }
+    
+        // Starts the open chest animation
+        public void AnimateOpenChest()
+        {
+            animator.SetBool("isOpen", true);
+        }
+
+        // Starts the close chest animation
+        public void AnimateCloseChest()
+        {
+            animator.SetBool("isOpen", false);
+        }
+    
+        public void AnimateHalfOpen() 
+        {
+            animator.SetBool("isHighlighted", true);
+        }
+
+        public void AnimateHalfClosed() 
+        {
+            animator.SetBool("isHighlighted", false);
         }
     }
 }

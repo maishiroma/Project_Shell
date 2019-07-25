@@ -36,12 +36,10 @@ namespace MattScripts {
         {
             bgmPlayer.PlayOneShot(BGM_Start);
             bgmPlayer.clip = BGM_Loop;
-            yield return new WaitForSeconds(2.35f);
-
-            //while(bgmPlayer.isPlaying)
-            //{
-            //    yield return null;
-            //}
+            while(bgmPlayer.isPlaying)
+            {
+                yield return null;
+            }
             bgmPlayer.Play();
             bgmPlayer.loop = true;
         }

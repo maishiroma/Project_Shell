@@ -105,12 +105,10 @@ namespace MattScripts {
         // Called to show the shell that the player should be looking at
         public IEnumerator ShowLuckyShell()
         {
-            // The shell should flash 3 times
-            for(int i = 0; i < 6; i++)
-            {
-                luckyShell.ToggleShellColors();
-                yield return new WaitForSeconds(0.5f);
-            }
+            luckyShell.AnimateOpenChest();
+            yield return new WaitForSeconds(3f);
+            luckyShell.AnimateCloseChest();
+            yield return new WaitForSeconds(1f);
 
             // If the game state is at SHOW, we start the game up
             // Otherwise, we simply leave the method
@@ -180,13 +178,22 @@ namespace MattScripts {
                     currentState = GameState.WIN;
                     gameScore += 1;
                     StartCoroutine(soundPlayer.WinSound());
+
+                    selectedShell.AnimateOpenChest();
                     yield return new WaitForSeconds(3f);
+                    selectedShell.AnimateCloseChest();
+                    yield return new WaitForSeconds(1f);
                 }
                 else
                 {
                     currentState = GameState.LOSE;
                     StartCoroutine(soundPlayer.LoseSound());
+
+                    luckyShell.AnimateOpenChest();
                     yield return new WaitForSeconds(3f);
+                    luckyShell.AnimateCloseChest();
+                    selectedShell.AnimateHalfClosed();
+                    yield return new WaitForSeconds(1f);
 
                     // If we lose once, we restart from the start
                     gameScore = 0;
