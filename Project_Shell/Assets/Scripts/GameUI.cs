@@ -38,9 +38,12 @@ namespace MattScripts {
 		{
             switch(GameManager.Instance.GetCurrentState)
             {
-                case GameState.START:
+                case GameState.BEGINNING:
                     startButton.gameObject.SetActive(true);
                     gameMessage.text = "Ready?";
+                    gameScore.text = "Streak: " + GameManager.Instance.GetScore;
+                    break;
+                case GameState.LOADING:
                     gameScore.text = "Streak: " + GameManager.Instance.GetScore;
                     break;
                 case GameState.SHOW:
@@ -55,6 +58,7 @@ namespace MattScripts {
                     break;
                 case GameState.WIN:
                     gameMessage.text = "Correct choice!";
+                    gameScore.text = "Streak: " + GameManager.Instance.GetScore;
                     break;
                 case GameState.LOSE:
                     gameMessage.text = "Too bad...";

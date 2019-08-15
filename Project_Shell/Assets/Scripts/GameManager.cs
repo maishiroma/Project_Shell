@@ -14,7 +14,8 @@ namespace MattScripts {
         SELECTING,          // When the game asks the player to choose the correct one
         SHUFFLING,          // When the game is moving the shell around
         SHOW,               // When the game shows the player the lucky shell
-        START               // When the player starts a new round
+        LOADING,            // When the player is transitioning to the next round
+        BEGINNING           // When the player enters the game
     }
 
     public class GameManager : MonoBehaviour {
@@ -34,7 +35,7 @@ namespace MattScripts {
         public SoundManager soundPlayer;
 
         // Private Variables
-        private GameState currentState = GameState.START;   // The current state the game is in rn
+        private GameState currentState = GameState.BEGINNING;   // The current state the game is in rn
         private InteractShell luckyShell;                   // Keeps track of this round's lucky shell
         private int gameScore;                              // The current score the player has
         private int origNumberOfSwitches;                   // Number of times the shells swap
@@ -64,7 +65,7 @@ namespace MattScripts {
         // We set the game state to be starting
 		private void Start()
 		{
-            currentState = GameState.START;
+            currentState = GameState.BEGINNING;
             gameScore = 0;
             origNumberOfSwitches = numberOfSwitches;
 		}
@@ -121,12 +122,13 @@ namespace MattScripts {
         // When called, starts up the game
         public void StartGame()
         {
-            if(currentState == GameState.START)
+            if(currentState == GameState.BEGINNING || currentState == GameState.LOADING)
             {
                 if(gameScore % turnDifficulty == 0 && gameScore != 0)
                 {
-                    // Every 5 sucessful rounds, we increase the difficulty.
+                    // Every X sucessful rounds, we increase the difficulty.
                     IncreaseDifficulty();
+                    soundPlayer.SpeedUpSong();
                 }
 
                 luckyShell = DetermineLuckyShell();
@@ -192,7 +194,6 @@ namespace MattScripts {
                     luckyShell.AnimateOpenChest();
                     yield return new WaitForSeconds(3f);
                     luckyShell.AnimateCloseChest();
-                    selectedShell.AnimateHalfClosed();
                     yield return new WaitForSeconds(1f);
 
                     // If we lose once, we restart from the start
@@ -206,7 +207,18 @@ namespace MattScripts {
                 {
                     currShell.ResetShell();
                 }
-                currentState = GameState.START;
+
+                // And depending if we won/lost, we proceed accordingly
+                if(currentState == GameState.LOSE)
+                {
+                    currentState = GameState.BEGINNING;
+                }
+                else if(currentState == GameState.WIN)
+                {
+                    currentState = GameState.LOADING;
+                    yield return null;
+                    StartGame();
+                }
             }
         }
     }

@@ -34,7 +34,8 @@ namespace MattScripts {
         private Shader origShader;
         private Animator animator;
 
-        private bool isMoving;                          // IS the object currently moving?
+        private bool isHovering;                        // Is the player currently selecting this?
+        private bool isMoving;                          // Is the object currently moving?
         private Vector3 newLocation;                    // The new destination to move this object towards
         private Vector3 origLocation;                   // The initial location of this object
         private Vector3 startMoveLocation;              // The current location this object is at before moving
@@ -71,7 +72,7 @@ namespace MattScripts {
 		}
 
         // Handles movement of the objects
-		private void Update()
+		private void FixedUpdate()
 		{
             if(isMoving == true)
             {
@@ -113,20 +114,28 @@ namespace MattScripts {
 		}
 
         // We are hovering over said object
-		private void OnMouseEnter()
+		private void OnMouseOver()
 		{
             if(GameManager.Instance.GetCurrentState == GameState.SELECTING)
             {
-                AnimateHalfOpen();
+                if(isHovering == false)
+                {
+                    ToggleShellColors();
+                    isHovering = true;
+                }
             }		
         }
 
-        // We left the mouse from this object
+		// We left the mouse from this object
 		private void OnMouseExit()
 		{
             if(GameManager.Instance.GetCurrentState == GameState.SELECTING)
             {
-                AnimateHalfClosed();
+                if(isHovering == true)
+                {
+                    ToggleShellColors();
+                    isHovering = false;
+                }
             }		
         }
 	
@@ -190,16 +199,6 @@ namespace MattScripts {
         public void AnimateCloseChest()
         {
             animator.SetBool("isOpen", false);
-        }
-    
-        public void AnimateHalfOpen() 
-        {
-            animator.SetBool("isHighlighted", true);
-        }
-
-        public void AnimateHalfClosed() 
-        {
-            animator.SetBool("isHighlighted", false);
         }
     }
 }

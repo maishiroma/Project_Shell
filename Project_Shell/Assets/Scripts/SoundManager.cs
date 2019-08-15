@@ -73,12 +73,23 @@ namespace MattScripts {
         }
 
         // Called to reset the entire song
+        // Also resets the pitch as well.
         public void RestartSong()
         {
             sfxPlayer.Stop();
             bgmPlayer.Stop();
+            bgmPlayer.pitch = 1f;
 
             StartCoroutine(StartSong());
+        }
+
+        // Upon being called, this will increase the pitch by 0.1f
+        public void SpeedUpSong()
+        {
+            if(bgmPlayer.pitch > 3f)
+            {
+                bgmPlayer.pitch += 0.1f;
+            }
         }
 	}
 }
