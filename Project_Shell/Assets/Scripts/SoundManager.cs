@@ -86,7 +86,7 @@ namespace MattScripts {
         // Upon being called, this will increase the pitch by 0.1f
         public void SpeedUpSong()
         {
-            if(bgmPlayer.pitch > 3f)
+            if(bgmPlayer.pitch < 3f)
             {
                 bgmPlayer.pitch += 0.1f;
             }

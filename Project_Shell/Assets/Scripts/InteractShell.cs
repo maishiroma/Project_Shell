@@ -109,6 +109,7 @@ namespace MattScripts {
             if(GameManager.Instance.GetCurrentState == GameState.SELECTING)
             {
                 // When we selected a shell, we show the answer and determine if the player has picked the right shell.
+                isHovering = false;
                 StartCoroutine(GameManager.Instance.ConcludeGame(this));
             }
 		}
@@ -120,7 +121,7 @@ namespace MattScripts {
             {
                 if(isHovering == false)
                 {
-                    ToggleShellColors();
+                    HighlightShell();
                     isHovering = true;
                 }
             }		
@@ -133,7 +134,7 @@ namespace MattScripts {
             {
                 if(isHovering == true)
                 {
-                    ToggleShellColors();
+                    DehighlightShell();
                     isHovering = false;
                 }
             }		
@@ -159,10 +160,7 @@ namespace MattScripts {
         public void ResetShell()
         {
             gameObject.transform.position = origLocation;
-            foreach(SkinnedMeshRenderer currRender in objRenders)
-            {
-                currRender.material.shader = origShader;
-            }
+            DehighlightShell();
             isWinner = false;
 
             // If we lost the game, we also reset its move speeds
@@ -173,8 +171,7 @@ namespace MattScripts {
             }
         }
     
-        // Toggles between the original color and the selected color. Used in an Coroutine to make a flash effect
-        public void ToggleShellColors()
+        public void HighlightShell()
         {
             foreach(SkinnedMeshRenderer currRender in objRenders)
             {
@@ -182,7 +179,14 @@ namespace MattScripts {
                 {
                     currRender.material.shader = outlineShader;
                 }
-                else
+            }
+        }
+
+        public void DehighlightShell()
+        {
+            foreach(SkinnedMeshRenderer currRender in objRenders)
+            {
+                if(currRender.material.shader == outlineShader)
                 {
                     currRender.material.shader = origShader;
                 }
