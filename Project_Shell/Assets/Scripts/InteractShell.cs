@@ -28,6 +28,7 @@ namespace MattScripts {
 
         [Header("Visual Variables")]
         public Shader outlineShader;                  // The shader to use when this object is selected
+        public GameObject goldPile;
 
         // Private Variables
         private SkinnedMeshRenderer[] objRenders;
