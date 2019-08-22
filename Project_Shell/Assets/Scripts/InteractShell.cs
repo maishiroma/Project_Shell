@@ -16,7 +16,6 @@ namespace MattScripts {
         public static float origArcHeight;              // The orignal arc height of all the shells
 
         [Header("General Variables")]
-        public bool isWinner = false;                   // This indicates that this shell is the lucky one
 
         [Tooltip("How fast does this shell move while being shuffled?")]
         [Range(1f,100f)]
@@ -27,23 +26,31 @@ namespace MattScripts {
         public float arcHeight = 1f;                    // How high is the arch on this object's movement?
 
         [Header("Visual Variables")]
+        public Animator animator;                     // Reference to the chest animations
         public Shader outlineShader;                  // The shader to use when this object is selected
+
+        [Header("External References")]
+        public Light spotLight;
+        public Light sceneLight;
         public GameObject goldPile;
 
         // Private Variables
         private SkinnedMeshRenderer[] objRenders;
         private Shader origShader;
-        private Animator animator;
 
+        private bool isWinner = false;                   // This indicates that this shell is the lucky one
         private bool isHovering;                        // Is the player currently selecting this?
         private bool isMoving;                          // Is the object currently moving?
         private Vector3 newLocation;                    // The new destination to move this object towards
         private Vector3 origLocation;                   // The initial location of this object
         private Vector3 startMoveLocation;              // The current location this object is at before moving
 
-        // Getter
+        // Getters
         public bool IsMoving {
             get {return isMoving;}
+        }
+        public bool IsWinner {
+            get { return isWinner;}
         }
 
         // Adds this shell to the list of shells in the game
@@ -62,14 +69,16 @@ namespace MattScripts {
         // Sets all of the variables to defaults
 		private void Start()
 		{
-            objRenders = gameObject.GetComponentsInChildren<SkinnedMeshRenderer>();
-            animator = gameObject.GetComponent<Animator>();
+            objRenders = gameObject.transform.GetChild(0).GetComponentsInChildren<SkinnedMeshRenderer>();
 
             origShader = objRenders[0].material.shader;
             origLocation = gameObject.transform.position;
             newLocation = Vector3.zero;
             startMoveLocation = Vector3.zero;
             isMoving = false;
+
+            goldPile.SetActive(false);
+            spotLight.enabled = false;
 		}
 
         // Handles movement of the objects
@@ -157,12 +166,23 @@ namespace MattScripts {
             }
         }
     
+        // Makes this shell the lucky shell
+        public void MarkAsLucky()
+        {
+            if(isWinner == false)
+            {
+                isWinner = true;
+                goldPile.SetActive(true);
+            }
+        }
+
         // Reverts this shell back to its default values
         public void ResetShell()
         {
             gameObject.transform.position = origLocation;
             DehighlightShell();
             isWinner = false;
+            goldPile.SetActive(false);
 
             // If we lost the game, we also reset its move speeds
             if(GameManager.Instance.GetCurrentState == GameState.LOSE)
@@ -172,6 +192,7 @@ namespace MattScripts {
             }
         }
     
+        // Toggles to highlight the shell
         public void HighlightShell()
         {
             foreach(SkinnedMeshRenderer currRender in objRenders)
@@ -183,6 +204,7 @@ namespace MattScripts {
             }
         }
 
+        // Toggels to dehighlight the shell
         public void DehighlightShell()
         {
             foreach(SkinnedMeshRenderer currRender in objRenders)
@@ -198,12 +220,16 @@ namespace MattScripts {
         public void AnimateOpenChest()
         {
             animator.SetBool("isOpen", true);
+            sceneLight.intensity = 0.4f;
+            spotLight.enabled = true;
         }
 
         // Starts the close chest animation
         public void AnimateCloseChest()
         {
             animator.SetBool("isOpen", false);
+            sceneLight.intensity = 1f;
+            spotLight.enabled = false;
         }
     }
 }

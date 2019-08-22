@@ -74,7 +74,7 @@ namespace MattScripts {
         private InteractShell DetermineLuckyShell()
         {
             int randomIndex = Random.Range(0, InteractShell.shellList.Count);
-            InteractShell.shellList[randomIndex].isWinner = true;
+            InteractShell.shellList[randomIndex].MarkAsLucky();
             return InteractShell.shellList[randomIndex];
         }
 
@@ -175,7 +175,7 @@ namespace MattScripts {
             {
                 // The reason we wait 3 seconds here is because we want to make sure the ShowLuckyShell method
                 // completes running its course, since we called it in parallel to this method.
-                if(selectedShell.isWinner == true)
+                if(selectedShell.IsWinner == true)
                 {
                     currentState = GameState.WIN;
                     gameScore += 1;

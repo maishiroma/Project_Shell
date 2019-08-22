@@ -54,10 +54,10 @@ namespace MattScripts {
                     gameMessage.text = "Keep an eye on the prize!";
                     break;
                 case GameState.SELECTING:
-                    gameMessage.text = "Which one is the lucky object?";
+                    gameMessage.text = "Guess the correct one!";
                     break;
                 case GameState.WIN:
-                    gameMessage.text = "Correct choice!";
+                    gameMessage.text = "Correct!!!";
                     gameScore.text = "Streak: " + GameManager.Instance.GetScore;
                     break;
                 case GameState.LOSE:
