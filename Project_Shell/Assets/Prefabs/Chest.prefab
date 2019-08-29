@@ -647,11 +647,11 @@ Light:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1036794516487132}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 8
   m_Type: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 4
+  m_Intensity: 0
   m_Range: 22.65
   m_SpotAngle: 50
   m_CookieSize: 10
@@ -691,11 +691,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 20
   arcHeight: 5
-  outlineShader: {fileID: 4800000, guid: c29ee6ce03c5e4660a6c442c3898981e, type: 3}
-  goldPile: {fileID: 1263670954969222}
-  spotLight: {fileID: 108796353280520928}
-  sceneLight: {fileID: 0}
   animator: {fileID: 95417592921971010}
+  outlineShader: {fileID: 4800000, guid: c29ee6ce03c5e4660a6c442c3898981e, type: 3}
+  lightTransitionSpeed: 0.1
+  spotLight: {fileID: 108796353280520928}
+  goldPile: {fileID: 1263670954969222}
 --- !u!137 &137373595087681494
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 1

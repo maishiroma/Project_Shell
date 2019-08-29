@@ -11,9 +11,14 @@ namespace MattScripts {
 
     public class InteractShell : MonoBehaviour {
 
+        // Static Variables
         public static List<InteractShell> shellList;    // All of the shells know how many shells are there in the game
-        public static float origMoveSpeed;              // The orignal move speed of all of the shells
-        public static float origArcHeight;              // The orignal arc height of all the shells
+
+        private static float origMoveSpeed;              // The orignal move speed of all of the shells
+        private static float origArcHeight;              // The orignal arc height of all the shells
+        private static float spotLightMaxIntensity = 4;  // The max spot light intensity this goes up to
+        private static Light sceneLight;                 // A reference to the scene lighting
+        private static float origSceneLightIntensity;    // The original scene lighting intensity
 
         [Header("General Variables")]
 
@@ -26,19 +31,20 @@ namespace MattScripts {
         public float arcHeight = 1f;                    // How high is the arch on this object's movement?
 
         [Header("Visual Variables")]
-        public Animator animator;                     // Reference to the chest animations
-        public Shader outlineShader;                  // The shader to use when this object is selected
+        public Animator animator;                       // Reference to the chest animations
+        public Shader outlineShader;                    // The shader to use when this object is selected
+        [Range(0.001f,1f)]
+        public float lightTransitionSpeed = 0.1f;       // How fast did the light change?
 
         [Header("External References")]
-        public Light spotLight;
-        public Light sceneLight;
-        public GameObject goldPile;
+        public Light spotLight;                         // Reference to the spot light the shell has
+        public GameObject goldPile;                     // Reference to the gold pile the shell has
 
         // Private Variables
-        private SkinnedMeshRenderer[] objRenders;
-        private Shader origShader;
+        private SkinnedMeshRenderer[] objRenders;       // Reference to the object renders the shell has
+        private Shader origShader;                      // Reference to the shader the shell originaly used
 
-        private bool isWinner = false;                   // This indicates that this shell is the lucky one
+        private bool isWinner = false;                  // This indicates that this shell is the lucky one
         private bool isHovering;                        // Is the player currently selecting this?
         private bool isMoving;                          // Is the object currently moving?
         private Vector3 newLocation;                    // The new destination to move this object towards
@@ -54,6 +60,7 @@ namespace MattScripts {
         }
 
         // Adds this shell to the list of shells in the game
+        // Also sets up the static variables
 		private void Awake()
 		{
             if(shellList == null)
@@ -61,6 +68,12 @@ namespace MattScripts {
                 shellList = new List<InteractShell>();
                 origMoveSpeed = moveSpeed;
                 origArcHeight = arcHeight;
+            }
+
+            if(sceneLight == null)
+            {
+                sceneLight = GameObject.FindWithTag("MainLight").GetComponent<Light>();
+                origSceneLightIntensity = sceneLight.intensity;
             }
 
             shellList.Add(this);
@@ -78,7 +91,6 @@ namespace MattScripts {
             isMoving = false;
 
             goldPile.SetActive(false);
-            spotLight.enabled = false;
 		}
 
         // Handles movement of the objects
@@ -149,6 +161,19 @@ namespace MattScripts {
                 }
             }		
         }
+
+        // Handles checking if two floats are equal. Returns false if they aren't equal
+        private bool FloatEquality(float f1, float f2)
+        {
+            if(Mathf.Abs(f1 - f2) < 0.1f)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
 	
         // Swaps this and the other shell's location
         public void SwapShellLocation(InteractShell otherShell)
@@ -217,19 +242,41 @@ namespace MattScripts {
         }
     
         // Starts the open chest animation
-        public void AnimateOpenChest()
+        public bool AnimateOpenChest()
         {
-            animator.SetBool("isOpen", true);
-            sceneLight.intensity = 0.4f;
-            spotLight.enabled = true;
+            if(animator.GetBool("isOpen") == false)
+            {
+                animator.SetBool("isOpen", true);
+            }
+            spotLight.intensity = Mathf.Lerp(spotLight.intensity, spotLightMaxIntensity, lightTransitionSpeed);
+            sceneLight.intensity = Mathf.Lerp(sceneLight.intensity, 0f, lightTransitionSpeed);
+
+            if(FloatEquality(spotLight.intensity, spotLightMaxIntensity) == false)
+            {
+                sceneLight.intensity = 0f;
+                spotLight.intensity = spotLightMaxIntensity;
+                return true;
+            }
+            return false;
         }
 
         // Starts the close chest animation
-        public void AnimateCloseChest()
+        public bool AnimateCloseChest()
         {
-            animator.SetBool("isOpen", false);
-            sceneLight.intensity = 1f;
-            spotLight.enabled = false;
+            if(animator.GetBool("isOpen") == true)
+            {
+                animator.SetBool("isOpen", false);
+            }
+            spotLight.intensity = Mathf.Lerp(spotLight.intensity, 0f, lightTransitionSpeed);
+            sceneLight.intensity = Mathf.Lerp(sceneLight.intensity, origSceneLightIntensity, lightTransitionSpeed);
+
+            if(FloatEquality(sceneLight.intensity, origSceneLightIntensity) == false)
+            {
+                spotLight.intensity = 0f;
+                sceneLight.intensity = origSceneLightIntensity;
+                return true;
+            }
+            return false;
         }
     }
 }

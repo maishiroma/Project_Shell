@@ -106,9 +106,15 @@ namespace MattScripts {
         // Called to show the shell that the player should be looking at
         public IEnumerator ShowLuckyShell()
         {
-            luckyShell.AnimateOpenChest();
-            yield return new WaitForSeconds(3f);
-            luckyShell.AnimateCloseChest();
+            while(luckyShell.AnimateOpenChest() == false)
+            {
+                yield return null;
+            }
+            yield return null;
+            while(luckyShell.AnimateCloseChest() == false)
+            {
+                yield return null;
+            }
             yield return new WaitForSeconds(1f);
 
             // If the game state is at SHOW, we start the game up
@@ -181,26 +187,35 @@ namespace MattScripts {
                     gameScore += 1;
                     StartCoroutine(soundPlayer.WinSound());
 
-                    selectedShell.AnimateOpenChest();
-                    yield return new WaitForSeconds(3f);
-                    selectedShell.AnimateCloseChest();
-                    yield return new WaitForSeconds(1f);
+                    while(selectedShell.AnimateOpenChest() == false)
+                    {
+                        yield return null;
+                    }
+                    while(selectedShell.AnimateCloseChest() == false)
+                    {
+                        yield return null;
+                    }
                 }
                 else
                 {
                     currentState = GameState.LOSE;
                     StartCoroutine(soundPlayer.LoseSound());
 
-                    luckyShell.AnimateOpenChest();
-                    yield return new WaitForSeconds(3f);
-                    luckyShell.AnimateCloseChest();
-                    yield return new WaitForSeconds(1f);
+                    while(luckyShell.AnimateOpenChest() == false)
+                    {
+                        yield return null;
+                    }
+                    while(luckyShell.AnimateCloseChest() == false)
+                    {
+                        yield return null;
+                    }
 
                     // If we lose once, we restart from the start
                     gameScore = 0;
                     numberOfSwitches = origNumberOfSwitches;
                     soundPlayer.RestartSong();
                 }
+                yield return new WaitForSeconds(1f);
 
                 // We then reset the shells back
                 foreach(InteractShell currShell in InteractShell.shellList)

@@ -227,7 +227,7 @@ GameObject:
   - component: {fileID: 170076734}
   m_Layer: 0
   m_Name: GlobalLight
-  m_TagString: Untagged
+  m_TagString: MainLight
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -453,6 +453,21 @@ Prefab:
       propertyPath: sceneLight
       value: 
       objectReference: {fileID: 170076734}
+    - target: {fileID: 108796353280520928, guid: 97c61f6dc090f425982390a02c009b88,
+        type: 2}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 108796353280520928, guid: 97c61f6dc090f425982390a02c009b88,
+        type: 2}
+      propertyPath: m_Intensity
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114084003796906440, guid: 97c61f6dc090f425982390a02c009b88,
+        type: 2}
+      propertyPath: lightTransitionSpeed
+      value: 0.07
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 97c61f6dc090f425982390a02c009b88, type: 2}
   m_IsPrefabAsset: 0
@@ -588,9 +603,9 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 114084003796906440, guid: 97c61f6dc090f425982390a02c009b88,
         type: 2}
-      propertyPath: sceneLight
-      value: 
-      objectReference: {fileID: 170076734}
+      propertyPath: lightTransitionSpeed
+      value: 0.07
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 97c61f6dc090f425982390a02c009b88, type: 2}
   m_IsPrefabAsset: 0
@@ -818,6 +833,21 @@ Prefab:
       propertyPath: sceneLight
       value: 
       objectReference: {fileID: 170076734}
+    - target: {fileID: 108796353280520928, guid: 97c61f6dc090f425982390a02c009b88,
+        type: 2}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 108796353280520928, guid: 97c61f6dc090f425982390a02c009b88,
+        type: 2}
+      propertyPath: m_Intensity
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114084003796906440, guid: 97c61f6dc090f425982390a02c009b88,
+        type: 2}
+      propertyPath: lightTransitionSpeed
+      value: 0.07
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 97c61f6dc090f425982390a02c009b88, type: 2}
   m_IsPrefabAsset: 0
