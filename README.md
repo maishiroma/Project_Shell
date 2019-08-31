@@ -2,18 +2,22 @@
 This repository contains the source code for my small game idea, Project Shell.
 
 ## Game Objectives
-The goal of the game is to win as much money as you can get. How to do it? Simple, keep track of the item that is under the cups! However, the longer you play the game, the faster and more complicated the cups move. How long can you go?!
+You have three shells (more like chests in this case). They move around randomly after showing you which one contains the prize. Make sure you choose the correct shell and you can continue! The longer your win, the harder and faster the game gets! Choose incorrectly and your win streak is reset! How long can you last?
 
 ## Project Goals
 1. Develop a _much_ smaller game that can be done from start to finish
 2. Develop better habits without making the game more complicated than it needs to be
 3. Be more consistent with using art (using the Asset Store)
 
+## Controls
+Mouse: Select shell
+Right Click: Pick shell
+
 ## How to Win
-Get as much cash as you can!
+Select the correct shell with the prize!
 
 ## How to Lose
-Lose all of your money!
+Incorrectly pick the right shell!
 
 ## External Links
 [trello board](https://trello.com/b/ebvHGJu0/project-shell)
